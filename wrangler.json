@@ -1,0 +1,16 @@
+{
+	"compatibility_date": "2025-10-08",
+	"main": "src/index.ts",
+	"name": "d1-template",
+	"upload_source_maps": true,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_id": "7e011808-8c46-4aa6-92ce-8ea65b902021",
+			"database_name": "evancompte"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

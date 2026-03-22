@@ -3,11 +3,49 @@ import { renderStatsPage } from "./renderStats";
 import { renderCategoriesPage } from "./renderCategories";
 import { renderHistoryPage } from "./renderHistory";
 import { renderSettingsPage } from "./renderSettings";
+import { d1ToGraph, graphToD1 } from "./apiData";
 
 export default {
 	async fetch(request: Request, env: Env) {
 		const url = new URL(request.url);
 		const path = url.pathname;
+
+		// API: GET/PUT données Compte Evan (format knowledge graph)
+		if (path === "/api/data") {
+			if (request.method === "GET") {
+				const graph = await d1ToGraph(env);
+				return new Response(JSON.stringify(graph), {
+					headers: {
+						"Content-Type": "application/json",
+						"Access-Control-Allow-Origin": "*",
+					},
+				});
+			}
+			if (request.method === "PUT") {
+				try {
+					const body = await request.json();
+					const graph = {
+						nodes: body.nodes || [],
+						edges: body.edges || [],
+					};
+					await graphToD1(env, graph);
+					return new Response(JSON.stringify({ ok: true }), {
+						headers: {
+							"Content-Type": "application/json",
+							"Access-Control-Allow-Origin": "*",
+						},
+					});
+				} catch (err) {
+					return new Response(
+						JSON.stringify({ ok: false, error: String(err) }),
+						{
+							status: 400,
+							headers: { "Content-Type": "application/json" },
+						}
+					);
+				}
+			}
+		}
 
 		// API: Supprimer une transaction
 		if (request.method === "DELETE" && path.startsWith("/api/transactions/")) {
@@ -158,6 +196,17 @@ export default {
 			return new Response(await renderSettingsPage(env, { success }), {
 				headers: { "Content-Type": "text/html; charset=utf-8" },
 			});
+		}
+
+		// Redirection Compte Evan
+		if (path === "/compte-evan") {
+			return Response.redirect(url.origin + "/compte-evan.html");
+		}
+
+		// Fichiers statiques (compte-evan.html, etc.)
+		const assets = (env as { ASSETS?: Fetcher }).ASSETS;
+		if (assets) {
+			return assets.fetch(request);
 		}
 
 		return new Response("Not Found", { status: 404 });

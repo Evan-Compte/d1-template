@@ -1,5 +1,6 @@
 const NAV_HTML = (currentPath: string) => `
 <nav class="nav">
+  <a href="/compte-evan" class="nav-link">📱 Compte Evan</a>
   <a href="/" class="nav-link ${currentPath === "/" || currentPath === "/budget" ? "active" : ""}">📊 Budget</a>
   <a href="/stats" class="nav-link ${currentPath === "/stats" ? "active" : ""}">📈 Stats</a>
   <a href="/historique" class="nav-link ${currentPath === "/historique" ? "active" : ""}">📋 Historique</a>
